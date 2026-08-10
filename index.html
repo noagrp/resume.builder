@@ -81,12 +81,12 @@
           }
         ],
         skills: [
-          { id: "skl-1", name: "JavaScript / TypeScript", category: "Languages" },
-          { id: "skl-2", name: "React, Next.js, Tailwind CSS", category: "Frontend" }
+          { id: "skl-1", name: "JavaScript / TypeScript", category: "Languages", customFields: [] },
+          { id: "skl-2", name: "React, Next.js, Tailwind CSS", category: "Frontend", customFields: [] }
         ],
         hobbies: [
-          { id: "hob-1", name: "Open Source Contributing" },
-          { id: "hob-2", name: "Rock Climbing & Photography" }
+          { id: "hob-1", name: "Open Source Contributing", customFields: [] },
+          { id: "hob-2", name: "Rock Climbing & Photography", customFields: [] }
         ]
       },
       customSections: []
@@ -153,14 +153,14 @@
                     <div key={cfIndex} className="flex items-center gap-2">
                       <input 
                         type="text" 
-                        placeholder="Field Label (e.g. Grade)" 
+                        placeholder="Field Label (e.g. Level)" 
                         value={cf.label} 
                         onChange={(e) => onUpdateCF(sectionKey, item.id, cfIndex, 'label', e.target.value)}
                         className="w-1/3 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:border-indigo-500"
                       />
                       <input 
                         type="text" 
-                        placeholder="Field Value (e.g. A+)" 
+                        placeholder="Field Value (e.g. Expert)" 
                         value={cf.value} 
                         onChange={(e) => onUpdateCF(sectionKey, item.id, cfIndex, 'value', e.target.value)}
                         className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:border-indigo-500"
@@ -350,7 +350,7 @@
             ...prev.sections,
             [sectionKey]: prev.sections[sectionKey].map(item => {
               if (item.id === itemId) {
-                const updatedCF = [...item.customFields];
+                const updatedCF = [...(item.customFields || [])];
                 updatedCF[cfIndex][field] = value;
                 return { ...item, customFields: updatedCF };
               }
@@ -369,7 +369,7 @@
               if (item.id === itemId) {
                 return {
                   ...item,
-                  customFields: item.customFields.filter((_, i) => i !== cfIndex)
+                  customFields: (item.customFields || []).filter((_, i) => i !== cfIndex)
                 };
               }
               return item;
@@ -419,7 +419,7 @@
               </div>
               <div>
                 <h1 className="text-xl font-bold tracking-tight">Resume Builder</h1>
-                <p className="text-xs text-slate-400">100% Private • No Server Storage Required</p>
+                <p className="text-xs text-slate-400">Our Local-First Resume Builder is designed to give you absolute privacy, speed, and complete control over your professional profile without ever requiring you to create an account or store your data on remote servers. Everything you type, upload, or customize stays strictly on your own device using local storage, ensuring that sensitive personal details never leave your browser. With a clean, lightweight, and device-friendly interface, it adapts seamlessly to your mobile phone, tablet, or desktop, allowing you to build, update, and manage your resume on the go. When you are ready, a single tap lets you instantly preview and download a clean, professional PDF without any watermarks, annoying ads, or hidden fees.</p>
               </div>
             </div>
 
@@ -760,8 +760,12 @@
                       </h3>
                       <div className="flex flex-wrap gap-1.5">
                         {resumeData.sections.skills.map((skl) => (
-                          <span key={skl.id} className="bg-slate-100 border border-slate-200 text-slate-800 text-xs px-2.5 py-1 rounded">
-                            {skl.name} {skl.category && <span className="text-slate-400 font-normal">({skl.category})</span>}
+                          <span key={skl.id} className="bg-slate-100 border border-slate-200 text-slate-800 text-xs px-2.5 py-1 rounded inline-flex items-center gap-1">
+                            <span>{skl.name}</span> 
+                            {skl.category && <span className="text-slate-400 font-normal">({skl.category})</span>}
+                            {skl.customFields && skl.customFields.map((cf, cidx) => (
+                              cf.label && <span key={cidx} className="text-indigo-600 font-medium ml-1">[{cf.label}: {cf.value}]</span>
+                            ))}
                           </span>
                         ))}
                       </div>
@@ -775,8 +779,12 @@
                       </h3>
                       <div className="flex flex-wrap gap-2 text-xs text-slate-700">
                         {resumeData.sections.hobbies.map((hob, idx) => (
-                          <span key={hob.id}>
-                            {hob.name}{idx < resumeData.sections.hobbies.length - 1 ? ' •' : ''}
+                          <span key={hob.id} className="inline-flex items-center gap-1">
+                            <span>{hob.name}</span>
+                            {hob.customFields && hob.customFields.map((cf, cidx) => (
+                              cf.label && <span key={cidx} className="text-indigo-600 font-medium">({cf.label}: {cf.value})</span>
+                            ))}
+                            {idx < resumeData.sections.hobbies.length - 1 ? ' •' : ''}
                           </span>
                         ))}
                       </div>
